@@ -1,62 +1,74 @@
 require('dotenv').config()
 
-const request = require('request')
-const twilio = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
-const wuEndpointBase = 'http://api.wunderground.com/api/'
-const wuAlertsEndpoint = wuEndpointBase + process.env.WUNDERGROUND_API_KEY + '/alerts/q/' + process.env.WUNDERGROUND_ZIP_CODE + '.json'
-const wuForecastEndpoint = wuEndpointBase + process.env.WUNDERGROUND_API_KEY + '/forecast/q/' + process.env.WUNDERGROUND_ZIP_CODE + '.json'
-const wuConditionsEndpoint = wuEndpointBase + process.env.WUNDERGROUND_API_KEY + '/conditions/q/' + process.env.WUNDERGROUND_ZIP_CODE + '.json'
+const {
+  windMphThreshold,
+  wundergroundZipCode,
+  relevantAlertTypes
+} = require('./src/config')
+const { forecastIsInFuture } = require('./src/weather-underground/util')
+const { getAlerts, getForecast } = require('./src/weather-underground/api')
+const { sendMessage } = require('./src/twilio/api')
 
-request(wuAlertsEndpoint, (err, response, body) => {
-  if (!err && response.statusCode === 200) {
-    body = JSON.parse(body)
-    if (body.alerts.length) {
-      for (var i = 0; i < body.alerts.length; i++) {
-        if (body.alerts[i].type === 'WND') {
-          twilio.messages.create({
-            to: process.env.MY_NUMBER,
-            from: process.env.TWILIO_NUMBER,
-            body: 'Wind advisory in effect until ' + body.alerts[i].expires
-          }, (err, response) => {
-            if (err) {
-              console.log('Twilio error:', err)
-            } else {
-              console.log('Twilio success:', response)
-            }
-          })
-          break
-        }
-      }
-    }
-  } else {
-    console.log('Weather Underground error:', err, response)
+/**
+ * [forecastRules description]
+ * @type {Array}
+ */
+const forecastRules = [
+  {
+    conditions: [
+      forecast => forecastIsInFuture(forecast),
+      forecast => forecast.maxwind.mph >= windMphThreshold
+    ],
+    body: forecast => `Max winds of ${forecast.maxwind.mph}mph ${forecast.maxwind.dir} for ${wundergroundZipCode} (avg. ${forecast.avewind.mph} ${forecast.avewind.dir}) on ${forecast.date.month}/${forecast.date.day}`
   }
-});
+]
 
-request(wuForecastEndpoint, (err, response, body) => {
-  if (!err && response.statusCode === 200) {
-    body = JSON.parse(body)
-    var now = new Date()
-    for (var i = 0; i < body.forecast.simpleforecast.forecastday.length; i++) {
-      var forecast = body.forecast.simpleforecast.forecastday[i];
-      if ( (forecast.date.day === now.getDate() && forecast.date.hour > now.getHours()) || (forecast.date.day > now.getDate()) ) { // Ignore forecasts in the past
-        if (forecast.maxwind.mph >= parseInt(process.env.WIND_MPH_THRESHOLD)) {
-          twilio.messages.create({
-            to: process.env.MY_NUMBER,
-            from: process.env.TWILIO_NUMBER,
-            body: 'Max winds ' + forecast.maxwind.mph + 'mph ' + forecast.maxwind.dir + ' (avg. ' + forecast.avewind.mph + ' ' + forecast.avewind.dir + ') on ' + forecast.date.month + '/' + forecast.date.day
-          }, function (err, response) {
-            if (err) {
-              console.log('Twilio error:', err)
-            } else {
-              console.log('Twilio success:', response)
-            }
-          });
-          break // Discard everything after the immediate next forecast where the conditions are met
-        }
-      }
-    }
-  } else {
-    console.log('Weather Underground error:', err, response)
+/**
+ * [sendAlertMessages description]
+ * @return {Array<Promise<MessageInstance>>} [description]
+ */
+async function sendAlertMessages() {
+  try {
+    const alertsJson = await getAlerts()
+    const relevantAlerts = alertsJson.alerts.filter(alert => relevantAlertTypes.includes(alert.type.toUpperCase()))
+    return relevantAlerts.map(alert => {
+      const body = `${alertTypes[alert.type.toUpperCase()]} for ${wundergroundZipCode} (expires ${alert.expires})`
+      return sendMessage({ body })
+    })
+  } catch (err) {
+    console.log(err)
   }
-})
+}
+
+/**
+ * [sendForecastMessages description]
+ * @return {Array<Promise<MessageInstance>>} [description]
+ */
+async function sendForecastMessages() {
+  try {
+    const forecastJson = await getForecast()
+    const { forecastday } = forecastJson.forecast.simpleforecast
+    const forecastMessages = []
+    forecastday.forEach(forecast => {
+      forecastRules.forEach(rule => {
+        const { conditions, body } = rule
+        const conditionResults = conditions.map(condition => condition(forecast))
+        const meetsAllConditions = conditionResults.every(result => result)
+        if (meetsAllConditions) {
+          const forecastMessage = sendMessage({ body: body(forecast) })
+          forecastMessages.push(forecastMessage)
+        }
+      })
+    })
+    return forecastMessages
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+function main() {
+  sendAlertMessages()
+  sendForecastMessages()
+}
+
+main()
