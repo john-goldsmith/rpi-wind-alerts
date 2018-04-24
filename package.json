@@ -9,8 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^2.0.0",
-    "request": "^2.69.0",
-    "twilio": "^3.3.0-edge"
+    "dotenv": "^5.0.1",
+    "request": "^2.85.0",
+    "twilio": "^3.15.1"
   }
 }
