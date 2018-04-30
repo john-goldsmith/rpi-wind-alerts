@@ -10,18 +10,41 @@ describe('Config', () => {
     expect(config).to.an('object')
   })
 
-  describe('properties', () => {
+  describe('Weather Underground properties', () => {
+
+    it('exists', () => {
+      expect(config.weatherUnderground).to.exist
+    })
+
+    it('is an object', () => {
+      expect(config.weatherUnderground).to.be.an('object')
+    })
 
     describe('relevantAlertTypes', () => {
 
       it('exists', () => {
-        expect(config.relevantAlertTypes).to.exist
+        expect(config.weatherUnderground.relevantAlertTypes).to.exist
       })
 
       it('is an array', () => {
-        const actual = config.relevantAlertTypes
+        const actual = config.weatherUnderground.relevantAlertTypes
         const expected = ['WND', 'HEA', 'FIR']
         expect(actual).to.be.an('array')
+        expect(actual).to.deep.equal(expected)
+      })
+
+    })
+
+    describe('relevantAlertTypesRaw', () => {
+
+      it('exists', () => {
+        expect(config.weatherUnderground.relevantAlertTypesRaw).to.exist
+      })
+
+      it('is a string', () => {
+        const actual = config.weatherUnderground.relevantAlertTypesRaw
+        const expected = 'WND,HEA,FIR'
+        expect(actual).to.be.a('string')
         expect(actual).to.deep.equal(expected)
       })
 
@@ -30,17 +53,93 @@ describe('Config', () => {
     describe('zipCode', () => {
 
       it('exists', () => {
-        expect(config.zipCode).to.exist
+        expect(config.weatherUnderground.zipCode).to.exist
       })
 
       it('is a string', () => {
-        const actual = config.zipCode
+        const actual = config.weatherUnderground.zipCode
         const expected = '90045'
         expect(actual).to.be.a('string')
         expect(actual).to.equal(expected)
       })
 
     })
+
+    describe('apiKey', () => {
+
+      it('exists', () => {
+        expect(config.weatherUnderground.apiKey).to.exist
+      })
+
+      it('is a string', () => {
+        const actual = config.weatherUnderground.apiKey
+        const expected = 'apikey123'
+        expect(actual).to.be.a('string')
+        expect(actual).to.equal(expected)
+      })
+
+    })
+
+  })
+
+  describe('Twilio properties', () => {
+
+    it('exists', () => {
+      expect(config.twilio).to.exist
+    })
+
+    it('is an object', () => {
+      expect(config.twilio).to.be.an('object')
+    })
+
+    describe('number', () => {
+
+      it('exists', () => {
+        expect(config.twilio.number).to.exist
+      })
+
+      it('is a string', () => {
+        const actual = config.twilio.number
+        const expected = '1234567890'
+        expect(actual).to.be.a('string')
+        expect(actual).to.equal(expected)
+      })
+
+    })
+
+    describe('accountSid', () => {
+
+      it('exists', () => {
+        expect(config.twilio.accountSid).to.exist
+      })
+
+      it('is a string', () => {
+        const actual = config.twilio.accountSid
+        const expected = 'AC01cd2e34f5g6hi789j01k2lm345n6o7p'
+        expect(actual).to.be.a('string')
+        expect(actual).to.equal(expected)
+      })
+
+    })
+
+    describe('authToken', () => {
+
+      it('exists', () => {
+        expect(config.twilio.authToken).to.exist
+      })
+
+      it('is a string', () => {
+        const actual = config.twilio.authToken
+        const expected = 'twilioauthtoken123'
+        expect(actual).to.be.a('string')
+        expect(actual).to.equal(expected)
+      })
+
+    })
+
+  })
+
+  describe('Misc properties', () => {
 
     describe('windMphThreshold', () => {
 
@@ -72,68 +171,6 @@ describe('Config', () => {
 
     })
 
-    describe('twilioNumber', () => {
-
-      it('exists', () => {
-        expect(config.twilioNumber).to.exist
-      })
-
-      it('is a string', () => {
-        const actual = config.twilioNumber
-        const expected = '1234567890'
-        expect(actual).to.be.a('string')
-        expect(actual).to.equal(expected)
-      })
-
-    })
-
-    describe('twilioAccountSid', () => {
-
-      it('exists', () => {
-        expect(config.twilioAccountSid).to.exist
-      })
-
-      it('is a string', () => {
-        const actual = config.twilioAccountSid
-        const expected = 'AC01cd2e34f5g6hi789j01k2lm345n6o7p'
-        expect(actual).to.be.a('string')
-        expect(actual).to.equal(expected)
-      })
-
-    })
-
-    describe('wuApiKey', () => {
-
-      it('exists', () => {
-        expect(config.wuApiKey).to.exist
-      })
-
-      it('is a string', () => {
-        const actual = config.wuApiKey
-        const expected = 'apikey123'
-        expect(actual).to.be.a('string')
-        expect(actual).to.equal(expected)
-      })
-
-    })
-
-    describe('twilioAuthToken', () => {
-
-      it('exists', () => {
-        expect(config.twilioAuthToken).to.exist
-      })
-
-      it('is a string', () => {
-        const actual = config.twilioAuthToken
-        const expected = 'twilioauthtoken123'
-        expect(actual).to.be.a('string')
-        expect(actual).to.equal(expected)
-      })
-
-    })
-
-
   })
-
 
 })

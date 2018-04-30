@@ -38,9 +38,23 @@
       "error",
       "never"
     ],
-    "space-before-function-paren": ["error", {
-      "named": "never",
-      "asyncArrow": "always"
-    }]
+    "space-before-function-paren": [
+      "error",
+      {
+        "named": "never",
+        "asyncArrow": "always"
+      }
+    ],
+    "no-console": [
+      "error",
+      {
+        "allow": [
+          "info",
+          "log",
+          "warn",
+          "error"
+        ]
+      }
+    ],
   }
 }

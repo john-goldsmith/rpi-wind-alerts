@@ -1,10 +1,10 @@
-const { twilioAccountSid, twilioAuthToken } = require('../config')
+const { twilio } = require('../config')
 
 /**
  * The configured Twilio client.
  *
  * @type {Twilio}
  */
-const client = require('twilio')(twilioAccountSid, twilioAuthToken)
+const twilioClient = require('twilio')(twilio.accountSid, twilio.authToken)
 
-module.exports = client
+module.exports = twilioClient

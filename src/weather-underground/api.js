@@ -1,12 +1,6 @@
 const fetch = require('node-fetch')
-
-/**
- * The Weather Underground API base URL
- *
- * @type {String}
- * @see https://www.wunderground.com/weather/api
- */
-const wuEndpointBase = 'http://api.wunderground.com/api'
+const { weatherUnderground } = require('../config')
+const { apiBaseUrl, apiKey, zipCode } = weatherUnderground
 
 /**
  * The Weather Underground API endpoint for alerts.
@@ -14,7 +8,7 @@ const wuEndpointBase = 'http://api.wunderground.com/api'
  * @type {String}
  * @see https://www.wunderground.com/weather/api/d/docs?d=data/alerts
  */
-const wuAlertsEndpoint = `${wuEndpointBase}/${process.env.WUNDERGROUND_API_KEY}/alerts/q/${process.env.WUNDERGROUND_ZIP_CODE}.json`
+const wuAlertsEndpoint = `${apiBaseUrl}/${apiKey}/alerts/q/${zipCode}.json`
 
 /**
  * The Weather Underground API endpoint for forecasts.
@@ -22,7 +16,7 @@ const wuAlertsEndpoint = `${wuEndpointBase}/${process.env.WUNDERGROUND_API_KEY}/
  * @type {String}
  * @see https://www.wunderground.com/weather/api/d/docs?d=data/forecast
  */
-const wuForecastEndpoint = `${wuEndpointBase}/${process.env.WUNDERGROUND_API_KEY}/forecast/q/${process.env.WUNDERGROUND_ZIP_CODE}.json`
+const wuForecastEndpoint = `${apiBaseUrl}/${apiKey}/forecast/q/${zipCode}.json`
 
 /**
  * Returns the short name description, expiration time and a long text

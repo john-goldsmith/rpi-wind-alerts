@@ -1,5 +1,5 @@
-const twilio = require('./client')
-const { myNumber, twilioNumber } = require('../config')
+const twilioClient = require('./client')
+const { myNumber, twilio } = require('../config')
 
 /**
  * Calls the Twilio API to send a message.
@@ -11,8 +11,9 @@ const { myNumber, twilioNumber } = require('../config')
  * @return {Promise<MessageInstance>}
  * @see https://www.twilio.com/docs/libraries/node
  */
-function sendMessage({ to = myNumber, from = twilioNumber, body = ''}) {
-  return twilio.messages.create({ to, from, body })
+function sendMessage({ to = myNumber, from = twilio.number, body = ''}) {
+  twilioClient.messages.create({ to, from, body })
+  console.info(`Sent message "${body}" to ${to} via ${from}.`)
 }
 
 module.exports = {

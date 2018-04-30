@@ -1,6 +1,6 @@
 const nock = require('nock')
 const util = require('../../../src/weather-underground/api')
-const { zipCode, wuApiKey } = require('../../../src/config')
+const { weatherUnderground } = require('../../../src/config')
 const urlRegExp = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/gi
 
 describe('Weather Underground API', () => {
@@ -13,7 +13,7 @@ describe('Weather Underground API', () => {
        * the Weather Underground API doesn't actually get hit while
        * running unit tests.
        */
-      nock(urlRegExp).persist().get(`/api/${wuApiKey}/alerts/q/${zipCode}.json`).reply(200, {alerts: true})
+      nock(urlRegExp).persist().get(`/api/${weatherUnderground.apiKey}/alerts/q/${weatherUnderground.zipCode}.json`).reply(200, {alerts: true})
     })
 
     after(() => {
@@ -44,7 +44,7 @@ describe('Weather Underground API', () => {
        * the Weather Underground API doesn't actually get hit while
        * running unit tests.
        */
-      nock(urlRegExp).persist().get(`/api/${wuApiKey}/forecast/q/${zipCode}.json`).reply(200, {forecast: true})
+      nock(urlRegExp).persist().get(`/api/${weatherUnderground.apiKey}/forecast/q/${weatherUnderground.zipCode}.json`).reply(200, {forecast: true})
     })
 
     after(() => {

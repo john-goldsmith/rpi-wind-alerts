@@ -12,6 +12,9 @@ Twilio and Weather Underground integration to send SMS weather notifications
 `npm test`
 
 ```
+41 passing
+1 pending
+
 -------------------------|----------|----------|----------|----------|-------------------|
 File                     |  % Stmts | % Branch |  % Funcs |  % Lines | Uncovered Line #s |
 -------------------------|----------|----------|----------|----------|-------------------|
